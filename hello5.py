@@ -1,18 +1,47 @@
-def login(username, password, users):
+def login(username, password, users, session=None):
     """Return True when username and password match an entry in users.
 
     `users` should map usernames to passwords, for example:
     {"alice": "correct-horse-battery-staple"}
     """
-    return username in users and users[username] == password
+    authenticated = username in users and users[username] == password
+    if authenticated and session is not None:
+        session["username"] = username
+    return authenticated
+
+
+def register(username, password, users):
+    """Add a new user, returning False for blank or already-used usernames."""
+    username = username.strip()
+    if not username or not password or username in users:
+        return False
+
+    users[username] = password
+    return True
 
 
 if __name__ == "__main__":
-    registered_users = {"alice": "change-this-password"}
-    username = input("Username: ")
-    password = input("Password: ")
+    registered_users = {}
+    session = {}
 
-    if login(username, password, registered_users):
-        print("Login successful.")
-    else:
-        print("Invalid username or password.")
+    while True:
+        action = input("Choose register, login, or exit: ").strip().lower()
+        if action == "exit":
+            break
+
+        if action == "register":
+            username = input("Username: ")
+            password = input("Password: ")
+            if register(username, password, registered_users):
+                print("Registration successful.")
+            else:
+                print("Username and password are required; usernames must be unique.")
+        elif action == "login":
+            username = input("Username: ")
+            password = input("Password: ")
+            if login(username, password, registered_users, session):
+                print(f"Login successful. Welcome, {session['username']}.")
+            else:
+                print("Invalid username or password.")
+        else:
+            print("Choose register, login, or exit.")
