@@ -20,12 +20,17 @@ def register(username, password, users):
     return True
 
 
+def logout(session):
+    """Clear the authenticated user from a session, returning whether it existed."""
+    return session.pop("username", None) is not None
+
+
 if __name__ == "__main__":
     registered_users = {}
     session = {}
 
     while True:
-        action = input("Choose register, login, or exit: ").strip().lower()
+        action = input("Choose register, login, logout, or exit: ").strip().lower()
         if action == "exit":
             break
 
@@ -43,5 +48,10 @@ if __name__ == "__main__":
                 print(f"Login successful. Welcome, {session['username']}.")
             else:
                 print("Invalid username or password.")
+        elif action == "logout":
+            if logout(session):
+                print("Logout successful.")
+            else:
+                print("No user is currently logged in.")
         else:
-            print("Choose register, login, or exit.")
+            print("Choose register, login, logout, or exit.")
